@@ -17,6 +17,7 @@ const Tutorial = (function () {
         }
 
         this.startTutorial = function (ev) {
+            moduleModel.setBaseStyle();
             moduleModel.startTutorial(ev, moduleOptions);
         }
 
@@ -47,6 +48,86 @@ const Tutorial = (function () {
 
         this.init = function (view) {
             moduleView = view;
+        }
+
+        this.setBaseStyle = function(){
+            let style = document.createElement('style');
+            style.innerHTML = `.msg{
+                position: absolute;
+                width: fit-content;
+                white-space: nowrap;
+                transition: 300ms;
+                -webkit-transition: 300ms;
+                -moz-transition: 300ms;
+                -ms-transition: 300ms;
+                -o-transition: 300ms;
+            }
+            
+            .tutorial{
+                position: absolute;
+                z-index: 2000;
+                transition: 300ms;
+                -webkit-transition: 300ms;
+                -moz-transition: 300ms;
+                -ms-transition: 300ms;
+                -o-transition: 300ms;
+            }
+            
+            .tutorial::before{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                box-shadow: 0 0 0 300rem rgba(0,0,0,0.7);
+                border-radius: inherit;
+                -webkit-border-radius: inherit;
+                -moz-border-radius: inherit;
+                -ms-border-radius: inherit;
+                -o-border-radius: inherit;
+                z-index: -1;
+            }
+            
+            .floatController{
+                position: absolute;
+                width: fit-content;
+                white-space: nowrap;
+                z-index: 2005;
+                transition: 300ms;
+                -webkit-transition: 300ms;
+                -moz-transition: 300ms;
+                -ms-transition: 300ms;
+                -o-transition: 300ms;
+            }
+            
+            .floatController .floatBtn.exit{
+                background-color: #EB47A8;
+            }
+            .floatController .floatBtn{
+                border: none;
+                padding: 0.5rem 1rem;
+                margin-left: .3rem;
+                margin-right: .3rem;
+                font-weight: 700;
+                color: white;
+                background-color: #A763D9;
+                border-radius: .3rem;
+                -webkit-border-radius: .3rem;
+                -moz-border-radius: .3rem;
+                -ms-border-radius: .3rem;
+                -o-border-radius: .3rem;
+                transition: box-shadow 300ms;
+                -webkit-transition: box-shadow 300ms;
+                -moz-transition: box-shadow 300ms;
+                -ms-transition: box-shadow 300ms;
+                -o-transition: box-shadow 300ms;
+            }
+            
+            .floatController .floatBtn:focus{
+                box-shadow: 0 0 0 .3rem white;
+            }`;
+            document.head.append(style);
         }
 
         this.floatController = function () {
