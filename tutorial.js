@@ -16,21 +16,21 @@ const Tutorial = (function () {
             window.addEventListener('click', this.exitTutorial);
         }
 
-        this.startTutorial = function(ev){
+        this.startTutorial = function (ev) {
             moduleModel.startTutorial(ev, moduleOptions);
         }
 
-        this.responsiveTutorial = function(ev){
+        this.responsiveTutorial = function (ev) {
             moduleModel.responsiveTutorial(ev);
         }
 
-        this.floatBtnsHandler = function(ev){
+        this.floatBtnsHandler = function (ev) {
             moduleModel.floatBtnsHandler(ev);
         }
 
-        this.exitTutorial = function(ev){
+        this.exitTutorial = function (ev) {
             let target = ev.target;
-            if(target.tagName !== 'BUTTON' || target.dataset.btn !== 'exit') return;
+            if (target.tagName !== 'BUTTON' || target.dataset.btn !== 'exit') return;
             document.querySelector('.tutorial').remove();
             document.querySelector('.floatController').remove();
         }
@@ -49,7 +49,7 @@ const Tutorial = (function () {
             moduleView = view;
         }
 
-        this.floatController = function(){
+        this.floatController = function () {
             let btnwrap = document.createElement('div');
             let prev = document.createElement('button');
             let next = document.createElement('button');
@@ -68,40 +68,44 @@ const Tutorial = (function () {
             return btnwrap;
         }
 
-        this.floatBtnsHandler = function(ev){
+        this.floatBtnsHandler = function (ev) {
             let target = ev.target;
             let type = target.dataset.btn;
-            if(type !== 'prev' && type !== 'next') return;
+            if (type !== 'prev' && type !== 'next') return;
 
             this.btnsHandler(target, type);
         }
 
-        this.btnsHandler = function(target, type){
+        this.btnsHandler = function (target, type) {
             let index = tutorialBundle.indexOf(currentTutorial);
-            
-            if(type == 'prev'){
-                if(index == 0) return;
-                currentTutorial = tutorialBundle[index-1];
+
+            if (type == 'prev') {
+                if (index == 0) return;
+                currentTutorial = tutorialBundle[index - 1];
                 this.responsiveTutorial();
             } else {
-                if(index == tutorialBundle.length-1) return;
-                currentTutorial = tutorialBundle[index+1];
+                if (index == tutorialBundle.length - 1) return;
+                currentTutorial = tutorialBundle[index + 1];
                 this.responsiveTutorial();
             }
 
-            setTimeout(()=>{
-                tutoBox.scrollIntoView({block: 'center', behavior: 'smooth', inline: 'nearest'});
+            setTimeout(() => {
+                tutoBox.scrollIntoView({
+                    block: 'center',
+                    behavior: 'smooth',
+                    inline: 'nearest'
+                });
             }, 100);
         }
 
-        this.startTutorial = function(ev, options){
+        this.startTutorial = function (ev, options) {
             moduleOptions = options;
 
             this.setTutorialToForm(options.selector)
         }
 
-        this.setTutorialToForm = function(selector){
-            try{
+        this.setTutorialToForm = function (selector) {
+            try {
                 let div = document.createElement('div');
                 let inner = document.createElement('div');
                 let msg = document.createElement('div');
@@ -112,53 +116,55 @@ const Tutorial = (function () {
                 tutoBox = div;
                 tutorialBundle = [];
 
-                selector.forEach(sel=>{
+                selector.forEach(sel => {
                     let settingItem = this.setStyleToTutorialItem(sel);
-                    if(!settingItem) throw new Error('[NoTarget] 타겟이 존재하지 않습니다.');
+                    if (!settingItem) throw new Error('[NoTarget] 타겟이 존재하지 않습니다.');
                     tutorialBundle.push(settingItem);
                 });
 
                 currentTutorial = tutorialBundle[0];
                 this.starterTutorial();
-            } catch(e) {
+            } catch (e) {
                 console.error(e.message);
             }
         }
 
-        this.setStyleToTutorialItem = function(selector){
+        this.setStyleToTutorialItem = function (selector) {
             let name, target, rect;
-            function Tutorial(name, target, msg, order){
+
+            function Tutorial(name, target, msg, order) {
                 this.name = name;
                 this.target = target;
                 this.msg = msg;
                 this.order = order;
             }
-            
+
             name = selector.name;
-            
+
             target = document.getElementById(name) || document.querySelector(`.${name}`) || document.querySelector(name);
-            if(!target) return false;
+            if (!target) return false;
             rect = target.getBoundingClientRect();
-            
-            orderCount+=1;
+
+            orderCount += 1;
 
             return new Tutorial(name, target, selector.msg, orderCount);
         }
 
-        this.setStyle = function(div, target, visible=true){
+        this.setStyle = function (div, target, visible = true) {
             let style = moduleOptions.style;
             let msgBox = moduleOptions.style.msgBox;
             let y = target.offsetTop;
             let x = target.offsetLeft;
-            let limitX = window.innerWidth-17;
-            let limitY = window.innerHeight-17;
+            let limitX = window.innerWidth - 17;
+            let limitY = window.innerHeight - 17;
             let msg = document.querySelector('.msg');
             let position = getComputedStyle(target)['position'];
-            let layer = style.layerLine
-            ?`box-shadow: .3rem .3rem 0 ${style.border.width} gray, -.3rem -.3rem 0 ${style.border.width} ${style.border.color}`
-            :`border: ${style.border.width} ${style.border.line} ${style.border.color}`;
-            msg.innerHTML = currentTutorial.msg;
-            
+            let layer = style.layerLine ?
+                `box-shadow: .3rem .3rem 0 ${style.border.width} gray, -.3rem -.3rem 0 ${style.border.width} ${style.border.color}` :
+                `border: ${style.border.width} ${style.border.line} ${style.border.color}`;
+
+            msg.innerHTML = `[${currentTutorial.order}] ${currentTutorial.msg}`;
+
             div.style.cssText = `
                 ${position=='fixed'?'position:'+position:''};
                 top: calc(${y}px - ${style.padding});
@@ -177,7 +183,7 @@ const Tutorial = (function () {
                 border-radius: ${style.border.rounded};
                 ${layer};
             `;
-            
+
             msg.style.cssText = `
                 background-color: ${msgBox.bgColor};
                 color: ${msgBox.color};
@@ -189,7 +195,7 @@ const Tutorial = (function () {
                 ${x+target.offsetWidth*1.3>limitX?'right':'left'}: 0;
                 margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: ${style.padding};
             `;
-            
+
             btns.style.cssText = `
                 margin-top: 3rem;
                 ${y+target.offsetHeight*1.3>limitY?'bottom: calc(120% + '+style.padding+' * 5)':'top: calc(0% + '+style.padding+' * 5)'};
@@ -199,12 +205,12 @@ const Tutorial = (function () {
             `;
         }
 
-        this.responsiveTutorial = function(ev){
-            let visible = getComputedStyle(currentTutorial.target)['display'] != 'none'?true:false;
+        this.responsiveTutorial = function (ev) {
+            let visible = getComputedStyle(currentTutorial.target)['display'] != 'none' ? true : false;
             this.setStyle(tutoBox, currentTutorial.target, visible);
         }
 
-        this.starterTutorial = function(){
+        this.starterTutorial = function () {
             moduleView.starterTutorial(tutoBox);
             this.setStyle(tutoBox, currentTutorial.target);
         }
@@ -217,25 +223,26 @@ const Tutorial = (function () {
             uiElem = ui;
         }
 
-        this.starterTutorial = function(tutoBox){
+        this.starterTutorial = function (tutoBox) {
             document.body.append(tutoBox);
         }
     }
 
     return {
-        init: function (options={}) {
+        init: function (options) {
+            options = this.initOptions(options);
             const head = document.head;
             const body = document.body;
             const html = document.querySelector('html');
-            
+
             const ui = {
                 head,
                 body,
                 html
             };
-            
-            if(options.selector){
-                options.selector.forEach(sel=>{
+
+            if (options.selector) {
+                options.selector.forEach(sel => {
                     ui[sel.name] = sel.selector;
                 });
             }
@@ -247,6 +254,39 @@ const Tutorial = (function () {
             view.init(ui);
             model.init(view, options.selector);
             controller.init(model, ui, options);
+        },
+        initOptions: function (options) {
+            let initOptions = {
+                style: {
+                    type: "rect",
+                    layerLine: true,
+                    padding: "1rem",
+                    bgColor: "rgba(0,0,0,0.2)",
+                    border: {
+                        rounded: "1rem",
+                        width: "3px",
+                        color: "#eb47a8",
+                        line: "solid",
+                    },
+                    msgBox: {
+                        bgColor: "rgba(0,0,0,0.5)",
+                        color: "white",
+                    }
+                }
+            }
+
+            function finding(init, obj){
+                for (let op in obj) {
+                    if(obj[op] instanceof Object && !(obj[op] instanceof Array)) {
+                        finding(init[op], obj[op]);
+                    } else {
+                        init[op] = obj[op];
+                    }
+                }
+            }
+
+            finding(initOptions, options);
+            return initOptions;
         }
     }
 })();
