@@ -61,5 +61,5 @@ const tutorial = Tutorial.init({
 ## cdn 사용
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-1/tutorial.js" integrity="sha384-QoJ9qdYpjWWNwkqNRgsPBX5luJVuldH5I+mXBXM53xuYlaea01lXk4TCqt6E4iZL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-2/tutorial.js" integrity="sha384-WHjeFhy3HdxzR+H8+i7YxIdxJArvdqIOH+l2EHajuBxZCTxdcD5OdB5l439OdUjg" crossorigin="anonymous"></script>
 ```
