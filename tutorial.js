@@ -151,6 +151,7 @@ const Tutorial = (function () {
                 -ms-transition: box-shadow 300ms;
                 -o-transition: box-shadow 300ms;
                 z-index: 2005;
+                cursor: pointer;
             }
 
             body .floatBtn.restart{
