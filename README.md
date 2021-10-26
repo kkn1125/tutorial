@@ -48,6 +48,9 @@ const tutorial = Tutorial.init({
         },
         msgBox: {
             bgColor: "rgba(0,0,0,0.5)",
+        },
+        tutorial: {
+            restart: "latest" // "base" default
         }
     }
 });
