@@ -2,7 +2,7 @@ const tutorial = Tutorial.init({
     selector: [
         {
             name: "navbar-brand",
-            msg: "브랜드명을 자유롭게 변경할 수 있습니다."
+            msg: "브랜드명을 자유롭게 변경할 수 있습니다.\n줄바꿈도 가능합니다"
         },
         {
             name: "navbar-toggler",
@@ -31,5 +31,8 @@ const tutorial = Tutorial.init({
         msgBox: {
             bgColor: "rgba(0,0,0,0.5)",
         }
+    },
+    tutorial: {
+        restart: "latest"
     }
 });
