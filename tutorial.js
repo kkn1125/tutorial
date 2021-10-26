@@ -14,6 +14,7 @@ const Tutorial = (function () {
             window.addEventListener('scroll', this.responsiveTutorial);
             window.addEventListener('click', this.floatBtnsHandler);
             window.addEventListener('click', this.exitTutorial);
+            window.addEventListener('click', this.restartTutorial);
         }
 
         this.startTutorial = function (ev) {
@@ -32,8 +33,14 @@ const Tutorial = (function () {
         this.exitTutorial = function (ev) {
             let target = ev.target;
             if (target.tagName !== 'BUTTON' || target.dataset.btn !== 'exit') return;
-            document.querySelector('.tutorial').remove();
-            document.querySelector('.floatController').remove();
+            moduleModel.exitTutorial(ev);
+            // document.querySelector('.floatController').remove();
+        }
+
+        this.restartTutorial = function(ev){
+            let target = ev.target;
+            if(target.tagName !== 'BUTTON' || !target.classList.contains('restart'))return;
+            moduleModel.restartTutorial(target);
         }
     }
 
@@ -45,9 +52,29 @@ const Tutorial = (function () {
         let tutoBox = null;
         let btns = null;
         let orderCount = 0;
+        let animationHeight = null;
 
         this.init = function (view) {
             moduleView = view;
+        }
+
+        this.exitTutorial = function(ev){
+            let btn = document.createElement('button');
+            btn.classList.add('floatBtn', 'restart');
+            btn.innerHTML = 'Restart';
+            document.body.append(btn);
+            document.querySelector('.tutorial').remove();
+            cancelAnimationFrame(animationHeight);
+        }
+
+        this.restartTutorial = function(target){
+            let restartType = moduleOptions.tutorial.restart;
+            if(restartType==='base'){
+                this.setTutorialToForm(moduleOptions.selector);
+            } else if(restartType==='latest'){
+                this.starterTutorial(tutoBox);
+            }
+            target.remove();
         }
 
         this.setBaseStyle = function(){
@@ -101,10 +128,11 @@ const Tutorial = (function () {
                 -o-transition: 300ms;
             }
             
-            .floatController .floatBtn.exit{
+            .floatBtn.exit{
                 background-color: #EB47A8;
             }
-            .floatController .floatBtn{
+
+            .floatBtn{
                 border: none;
                 padding: 0.5rem 1rem;
                 margin-left: .3rem;
@@ -122,10 +150,33 @@ const Tutorial = (function () {
                 -moz-transition: box-shadow 300ms;
                 -ms-transition: box-shadow 300ms;
                 -o-transition: box-shadow 300ms;
+                z-index: 2005;
+            }
+
+            body .floatBtn.restart{
+                background-color: #47eba7;
+                position: fixed;
+                bottom: 20%;
+                left: 3%;
             }
             
-            .floatController .floatBtn:focus{
+            .floatBtn.restart:focus{
+                box-shadow: 0 0 0 .3rem rgba(0,0,0,0.5);
+            }
+
+            .floatBtn:focus{
                 box-shadow: 0 0 0 .3rem white;
+            }
+            
+            .noclick{
+                width: 300vw;
+                height: 300vh;
+                background-color: transparent;
+                user-select: none;
+                pointer-events: unset;
+                position: fixed;
+                top: 0;
+                left: 0;
             }`;
             document.head.append(style);
         }
@@ -190,13 +241,15 @@ const Tutorial = (function () {
                 let div = document.createElement('div');
                 let inner = document.createElement('div');
                 let msg = document.createElement('div');
+                let noclick = document.createElement('div');
                 btns = this.floatController();
-                div.append(inner, msg, btns);
+                div.append(inner, msg, btns, noclick);
                 div.classList.add('tutorial');
                 msg.classList.add('msg');
+                noclick.classList.add('noclick');
                 tutoBox = div;
                 tutorialBundle = [];
-
+                orderCount = 0;
                 selector.forEach(sel => {
                     let settingItem = this.setStyleToTutorialItem(sel);
                     if (!settingItem) throw new Error('[NoTarget] 타겟이 존재하지 않습니다.');
@@ -244,7 +297,7 @@ const Tutorial = (function () {
                 `box-shadow: .3rem .3rem 0 ${style.border.width} gray, -.3rem -.3rem 0 ${style.border.width} ${style.border.color}` :
                 `border: ${style.border.width} ${style.border.line} ${style.border.color}`;
 
-            msg.innerHTML = `[${currentTutorial.order}] ${currentTutorial.msg}`;
+            if(msg) msg.innerHTML = `[${currentTutorial.order}] ${currentTutorial.msg.replace(/\n/gm, '<br>')}`;
 
             div.style.cssText = `
                 ${position=='fixed'?'position:'+position:''};
@@ -264,7 +317,7 @@ const Tutorial = (function () {
                 border-radius: ${style.border.rounded};
                 ${layer};
             `;
-
+            if(msg)
             msg.style.cssText = `
                 background-color: ${msgBox.bgColor};
                 color: ${msgBox.color};
@@ -277,13 +330,21 @@ const Tutorial = (function () {
                 margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: ${style.padding};
             `;
 
-            btns.style.cssText = `
-                margin-top: 3rem;
-                ${y+target.offsetHeight*1.3>limitY?'bottom: calc(120% + '+style.padding+' * 5)':'top: calc(0% + '+style.padding+' * 5)'};
-                transform: translateY(100%);
-                ${x+target.offsetWidth*1.3>limitX?'right':'left'}: 5%;
-                margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: ${style.padding};
-            `;
+            let msgHeight = 0;
+            let animationHeight = requestAnimationFrame(getHeight);
+            function getHeight(){
+                if(document.querySelector('.msg'))
+                msgHeight = document.querySelector('.msg').getBoundingClientRect().height;
+                btns.style.cssText = `
+                    margin-top: 1rem;
+                    ${y+target.offsetHeight*1.3>limitY?'bottom: calc(120% + '+style.padding+' * 5)':'top: calc('+msgHeight+'px + '+target.offsetHeight+'px + '+style.padding+' * 1)'};
+                    transform: translateY(100%);
+                    ${x+target.offsetWidth*1.3>limitX?'right':'left'}: 5%;
+                    margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: calc(${style.padding} / 2);
+                    ${y+target.offsetHeight*1.3>limitY?'margin-bottom: 1rem':''};
+                `;
+                requestAnimationFrame(getHeight);
+            }
         }
 
         this.responsiveTutorial = function (ev) {
@@ -302,6 +363,10 @@ const Tutorial = (function () {
 
         this.init = function (ui) {
             uiElem = ui;
+        }
+
+        this.createRestartBtn = function(){
+            document.body.append();
         }
 
         this.starterTutorial = function (tutoBox) {
@@ -353,6 +418,9 @@ const Tutorial = (function () {
                         bgColor: "rgba(0,0,0,0.5)",
                         color: "white",
                     }
+                },
+                tutorial: {
+                    restart: "base", // "lastest"
                 }
             }
 
