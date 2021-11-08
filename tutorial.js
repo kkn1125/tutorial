@@ -138,6 +138,7 @@ const Tutorial = (function () {
 
         this.exitBtnHandler = function(options){
             moduleView.clearTutorial(options);
+            tutorialList = [];
         }
     }
 
