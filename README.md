@@ -17,7 +17,7 @@ tutorial.js와 index.js를 연결합니다.
 // index.js
 
 const tutorial = Tutorial.init({
-    selector: [
+    tutorial: [
         {
             name: "navbar-brand",
             msg: "브랜드명을 자유롭게 변경할 수 있습니다."
@@ -35,24 +35,31 @@ const tutorial = Tutorial.init({
             msg: "푸터 입니다."
         },
     ],
-    style: {
-        type: "rect",
-        layerLine: true,
+   style: {
         padding: "1rem",
-        bgColor: "rgba(0,0,0,0.2)",
+        shadowColor: "rgba(0,0,0,0.7)",
         border: {
             rounded: "1rem",
-            width: "3px",
+            width: "10px",
             color: "#eb47a8",
-            line: "solid",
         },
         msgBox: {
+            rounded: ".5rem",
             bgColor: "rgba(0,0,0,0.5)",
+            color: 'white',
         },
-        tutorial: {
-            restart: "latest" // "base" default
+        btns: {
+            rounded: ".5rem",
         }
-    }
+    },
+    naming: {
+        restart: '튜토리얼 보기',
+        prev: '이전',
+        next: '다음',
+        exit: '종료',
+    },
+    autoPlay: true,
+    effect: 'none',
 });
 ```
 
@@ -64,7 +71,7 @@ const tutorial = Tutorial.init({
 ## cdn 사용
 
 ```html
-<!-- update-5 -->
+<!-- v0.1.0 pre-release -->
 <script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-5/tutorial.js" integrity="sha384-sA5mI0st775JGtzxJUNd8aln7/fhc82dqZOXqntMWHCIJbHjb6pRsWZ7N8WpKLdP" crossorigin="anonymous"></script>
 
 <!-- update-3 -->
