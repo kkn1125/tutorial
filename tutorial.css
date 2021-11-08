@@ -1,15 +1,234 @@
+/**!
+ * tutorial v0.1.0 (https://github.com/kkn1125/tutorial)
+ * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125, ohoraming
+ * Licensed under MIT (https://github.com/kkn1125/tutorial/blob/main/LICENSE)
+ */
+
+:root{
+    --tt-border: 3px solid salmon;
+}
+
 body{
-    height: 200vh
+    overflow-x: hidden;
 }
 
-.card-wrap .card{
-    margin-right: 1rem;
+*{
+    box-sizing: border-box;
 }
 
-.card-wrap .card:last-child{
-    margin-right: unset;
+a{
+    text-decoration: none;
 }
 
-.divider{
-    margin-top: 3rem;
+[tuto-num]{
+    background-color:rgba(76, 192, 82, 0.5);
+    color: white;
+    font-size: .8rem;
+    padding: .3rem .4rem;
+    border-radius: .3rem;
+    -webkit-border-radius: .3rem;
+    -moz-border-radius: .3rem;
+    -ms-border-radius: .3rem;
+    -o-border-radius: .3rem;
+    margin-top: .5rem;
+    display: inline-block;
+}
+
+[tuto-msg]{
+    text-indent: 1em;
+}
+
+[tuto-order]{
+    color: white;
+    background-color: rgba(76, 192, 82, 1);
+    padding: .1rem .4rem;
+}
+
+button{
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+}
+
+.tuto-wrap{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+    user-select: none;
+}
+
+.tuto-wrap::before{
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+}
+
+.tuto-wrap .tuto-box{
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+.tuto-wrap .tuto-box .tuto-view-wrap{
+    position: relative;
+}
+
+.tuto-wrap .tuto-box .tuto-view{
+    position: absolute;
+    max-width: 90vw;
+    width: max-content;
+    min-width: 10vw;
+}
+
+.tuto-wrap .tuto-box .tuto-view-wrap .tuto-view .tuto-msg{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 1rem 0 .5rem;
+    padding: 1em;
+    border-radius: 1rem;
+    -webkit-border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -ms-border-radius: 1rem;
+    -o-border-radius: 1rem;
+}
+
+.tuto-wrap .tuto-box .tuto-view .tuto-btns{
+    display: inline-block;
+    margin-top: .3em;
+}
+
+.tuto-wrap .tuto-box .tuto-view .tuto-btns button{
+    color: white;
+    background-color: rgb(87, 226, 74);
+    margin: 0 .3rem;
+    padding: .3rem .6rem;
+    border-radius: inherit;
+    -webkit-border-radius: inherit;
+    -moz-border-radius: inherit;
+    -ms-border-radius: inherit;
+    -o-border-radius: inherit;
+    transition: .3s;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -ms-transition: .3s;
+    -o-transition: .3s;
+}
+
+.tuto-wrap .tuto-box .tuto-view .tuto-btns button.exit{
+    background-color: rgba(226, 64, 64, 1);
+}
+
+.tuto-wrap .tuto-box .tuto-view .tuto-btns button:focus{
+    box-shadow: 0 0 0 .3rem rgba(120, 243, 109, 0.3);
+}
+
+.tuto-wrap .tuto-box .tuto-view .tuto-btns button:hover{
+    background-color: rgb(71, 187, 60);
+}
+
+.tuto-wrap .tuto-box .tuto-border{
+    position: relative;
+    pointer-events: none;
+    border-radius: 1rem;
+    -webkit-border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    -ms-border-radius: 1rem;
+    -o-border-radius: 1rem;
+}
+
+.tuto-wrap .tuto-box .tuto-border .tuto-mark{
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 0 0 3px rgba(226, 64, 64, 1);
+    border-radius: inherit;
+    -webkit-border-radius: inherit;
+    -moz-border-radius: inherit;
+    -ms-border-radius: inherit;
+    -o-border-radius: inherit;
+}
+
+.tuto-wrap .tuto-box .tuto-border .tuto-mark.effect-ripple::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border: 5px solid red;
+    border-radius: inherit;
+    -webkit-border-radius: inherit;
+    -moz-border-radius: inherit;
+    -ms-border-radius: inherit;
+    -o-border-radius: inherit;
+    animation: ripple 1s infinite;
+    -webkit-animation: ripple 1s infinite;
+    transform:translate(-50%, -50%);
+    -webkit-transform:translate(-50%, -50%);
+    -moz-transform:translate(-50%, -50%);
+    -ms-transform:translate(-50%, -50%);
+    -o-transform:translate(-50%, -50%);
+    z-index: -1;
+}
+
+@keyframes ripple {
+    0%{
+        width: calc(100% + 10px);
+        height: calc(100% + 10px);
+        opacity: 1;
+        border: 5px solid red;
+    }
+    100%{
+        width: calc(150% + 6px);
+        height: calc(150% + 6px);
+        opacity: 0;
+        border: 0px solid red;
+    }
+}
+
+.tuto-wrap .tuto-box .tuto-border .tuto-shadow{
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    border-radius: inherit;
+    -webkit-border-radius: inherit;
+    -moz-border-radius: inherit;
+    -ms-border-radius: inherit;
+    -o-border-radius: inherit;
+}
+
+.restart{
+    color: white;
+    position: fixed;
+    background-color: rgb(87, 226, 74);
+    margin: 0 .3rem;
+    padding: .3rem .6rem;
+    border-radius: .5rem;
+    -webkit-border-radius: .5rem;
+    -moz-border-radius: .5rem;
+    -ms-border-radius: .5rem;
+    -o-border-radius: .5rem;
+    transition: .3s;
+    -webkit-transition: .3s;
+    -moz-transition: .3s;
+    -ms-transition: .3s;
+    -o-transition: .3s;
+    z-index: 1100;
+    box-shadow: 0 0 .5rem 0 rgba(0,0,0,0.3);
 }

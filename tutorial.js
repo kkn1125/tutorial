@@ -1,3 +1,9 @@
+/**!
+ * tutorial v0.1.0 (https://github.com/kkn1125/tutorial)
+ * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125, ohoraming
+ * Licensed under MIT (https://github.com/kkn1125/tutorial/blob/main/LICENSE)
+ */
+
 const Tutorial = (function () {
     function Controller() {
         let moduleModel = null;
@@ -9,375 +15,278 @@ const Tutorial = (function () {
             moduleOptions = options;
             uiElem = ui;
 
-            window.addEventListener('load', this.startTutorial);
+            options.autoPlay ? this.startTutorial() : moduleModel.exitBtnHandler(moduleOptions);
             window.addEventListener('resize', this.responsiveTutorial);
             window.addEventListener('scroll', this.responsiveTutorial);
-            window.addEventListener('click', this.floatBtnsHandler);
-            window.addEventListener('click', this.exitTutorial);
+            window.addEventListener('click', this.tutoBtnsHandler);
             window.addEventListener('click', this.restartTutorial);
         }
 
-        this.startTutorial = function (ev) {
-            moduleModel.setBaseStyle();
-            moduleModel.startTutorial(ev, moduleOptions);
+        this.startTutorial = function () {
+            moduleModel.startTutorial(moduleOptions);
         }
 
-        this.responsiveTutorial = function (ev) {
-            moduleModel.responsiveTutorial(ev);
+        this.responsiveTutorial = function(){
+            moduleModel.responsiveTutorial(moduleOptions);
         }
 
-        this.floatBtnsHandler = function (ev) {
-            moduleModel.floatBtnsHandler(ev);
-        }
-
-        this.exitTutorial = function (ev) {
+        this.tutoBtnsHandler = function(ev){
             let target = ev.target;
-            if (target.tagName !== 'BUTTON' || target.dataset.btn !== 'exit') return;
-            moduleModel.exitTutorial(ev);
-            // document.querySelector('.floatController').remove();
+            if(target.tagName !== 'BUTTON') return;
+            if(target.classList.contains('prev')) moduleModel.prevBtnHandler(moduleOptions);
+            else if(target.classList.contains('next')) moduleModel.nextBtnHandler(moduleOptions);
+            else if(target.classList.contains('exit')) moduleModel.exitBtnHandler(moduleOptions);
         }
 
         this.restartTutorial = function(ev){
             let target = ev.target;
-            if(target.tagName !== 'BUTTON' || !target.classList.contains('restart'))return;
-            moduleModel.restartTutorial(target);
+            if(target.tagName !== 'BUTTON' || target.className !== 'restart') return;
+            moduleModel.restartTutorial(target, moduleOptions);
         }
     }
 
     function Model() {
         let moduleView = null;
-        let moduleOptions = null;
-        let tutorialBundle = [];
+        let tutorialList = [];
         let currentTutorial = null;
-        let tutoBox = null;
-        let btns = null;
-        let orderCount = 0;
-        let animationHeight = null;
 
         this.init = function (view) {
             moduleView = view;
         }
 
-        this.exitTutorial = function(ev){
-            let btn = document.createElement('button');
-            btn.classList.add('floatBtn', 'restart');
-            btn.innerHTML = 'Restart';
-            document.body.append(btn);
-            document.querySelector('.tutorial').remove();
-            cancelAnimationFrame(animationHeight);
+        this.startTutorial = function (options) {
+            try{
+                this.validTarget(options.tutorial);
+            } catch(e){
+                console.error(e.message);
+            }
+
+            this.setCurrentTutorial();
+            this.rederTutorial(options);
         }
 
-        this.restartTutorial = function(target){
-            let restartType = moduleOptions.tutorial.restart;
-            if(restartType==='base'){
-                this.setTutorialToForm(moduleOptions.selector);
-            } else if(restartType==='latest'){
-                this.starterTutorial(tutoBox);
+        this.validTarget = function (tutoInfo) {
+            let validList = [].slice.call(tutoInfo);
+
+            validList.map(tutoBox=>{
+                let target = document.getElementById(tutoBox.name) || document.querySelector(`.${tutoBox.name}`) || document.querySelector(tutoBox.name);
+                if(!target){
+                    throw new Error('타겟이 존재하지 않습니다.');
+                }
+                tutoBox.target = target;
+                return tutoBox;
+            });
+
+            this.setTutorialList([].slice.call(validList));
+        }
+
+        this.setTutorialList = function(list){
+            function TutoBox({name, target, message}){
+                this.name = name;
+                this.target = target;
+                this.message = message;
+                this.order = 0;
+                this.created = new Date().toLocaleString();
+                this.autoIncrement = function(){
+                    this.order = tutorialList.indexOf(this);
+                };
             }
+            
+            list.forEach(item=>{
+                let box = new TutoBox(item);
+                tutorialList.push(box);
+                box.autoIncrement();
+            });
+        }
+
+        this.restartTutorial = function(target, options){
+            this.startTutorial(options);
             target.remove();
         }
 
-        this.setBaseStyle = function(){
-            let style = document.createElement('style');
-            style.innerHTML = `.msg{
-                position: absolute;
-                width: fit-content;
-                white-space: nowrap;
-                transition: 300ms;
-                -webkit-transition: 300ms;
-                -moz-transition: 300ms;
-                -ms-transition: 300ms;
-                -o-transition: 300ms;
-            }
-            
-            .tutorial{
-                position: absolute;
-                z-index: 2000;
-                transition: 300ms;
-                -webkit-transition: 300ms;
-                -moz-transition: 300ms;
-                -ms-transition: 300ms;
-                -o-transition: 300ms;
-            }
-            
-            .tutorial::before{
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                box-shadow: 0 0 0 300rem rgba(0,0,0,0.7);
-                border-radius: inherit;
-                -webkit-border-radius: inherit;
-                -moz-border-radius: inherit;
-                -ms-border-radius: inherit;
-                -o-border-radius: inherit;
-                z-index: -1;
-            }
-            
-            .floatController{
-                position: absolute;
-                width: fit-content;
-                white-space: nowrap;
-                z-index: 2005;
-                transition: 300ms;
-                -webkit-transition: 300ms;
-                -moz-transition: 300ms;
-                -ms-transition: 300ms;
-                -o-transition: 300ms;
-            }
-            
-            .floatBtn.exit{
-                background-color: #EB47A8;
-            }
-
-            .floatBtn{
-                border: none;
-                padding: 0.5rem 1rem;
-                margin-left: .3rem;
-                margin-right: .3rem;
-                font-weight: 700;
-                color: white;
-                background-color: #A763D9;
-                border-radius: .3rem;
-                -webkit-border-radius: .3rem;
-                -moz-border-radius: .3rem;
-                -ms-border-radius: .3rem;
-                -o-border-radius: .3rem;
-                transition: box-shadow 300ms;
-                -webkit-transition: box-shadow 300ms;
-                -moz-transition: box-shadow 300ms;
-                -ms-transition: box-shadow 300ms;
-                -o-transition: box-shadow 300ms;
-                z-index: 2005;
-                cursor: pointer;
-            }
-
-            body .floatBtn.restart{
-                background-color: #47eba7;
-                position: fixed;
-                bottom: 20%;
-                left: 3%;
-            }
-            
-            .floatBtn.restart:focus{
-                box-shadow: 0 0 0 .3rem rgba(0,0,0,0.5);
-            }
-
-            .floatBtn:focus{
-                box-shadow: 0 0 0 .3rem white;
-            }
-            
-            .noclick{
-                width: 300vw;
-                height: 300vh;
-                background-color: transparent;
-                user-select: none;
-                pointer-events: unset;
-                position: fixed;
-                top: 0;
-                left: 0;
-            }`;
-            document.head.append(style);
+        this.setCurrentTutorial = function(order=0){
+            currentTutorial = tutorialList[order];
         }
 
-        this.floatController = function () {
-            let btnwrap = document.createElement('div');
-            let prev = document.createElement('button');
-            let next = document.createElement('button');
-            let exit = document.createElement('button');
-            prev.innerHTML = 'prev';
-            next.innerHTML = 'next';
-            exit.innerHTML = 'exit';
-            prev.dataset.btn = 'prev';
-            next.dataset.btn = 'next';
-            exit.dataset.btn = 'exit';
-            btnwrap.classList.add('floatController');
-            prev.classList.add('floatBtn');
-            next.classList.add('floatBtn');
-            exit.classList.add('floatBtn', 'exit');
-            btnwrap.append(prev, next, exit);
-            return btnwrap;
+        this.rederTutorial = function(options){
+            moduleView.rederTutorial(currentTutorial, tutorialList, options);
         }
 
-        this.floatBtnsHandler = function (ev) {
-            let target = ev.target;
-            let type = target.dataset.btn;
-            if (type !== 'prev' && type !== 'next') return;
-
-            this.btnsHandler(target, type);
+        this.responsiveTutorial = function(options){
+            moduleView.updateBox(currentTutorial, options);
         }
 
-        this.btnsHandler = function (target, type) {
-            let index = tutorialBundle.indexOf(currentTutorial);
-
-            if (type == 'prev') {
-                if (index == 0) return;
-                currentTutorial = tutorialBundle[index - 1];
-                this.responsiveTutorial();
-            } else {
-                if (index == tutorialBundle.length - 1) return;
-                currentTutorial = tutorialBundle[index + 1];
-                this.responsiveTutorial();
+        this.prevBtnHandler = function(options){
+            let curIdx = tutorialList.indexOf(currentTutorial)-1;
+            while(tutorialList[curIdx] && getComputedStyle(tutorialList[curIdx].target)['display']=='none') {
+                curIdx--;
             }
-
-            setTimeout(() => {
-                tutoBox.scrollIntoView({
-                    block: 'center',
-                    behavior: 'smooth',
-                    inline: 'nearest'
-                });
-            }, 100);
+            if(curIdx<0) curIdx = 0;
+            this.setCurrentTutorial(curIdx);
+            this.rederTutorial(options);
         }
 
-        this.startTutorial = function (ev, options) {
-            moduleOptions = options;
-
-            this.setTutorialToForm(options.selector)
-        }
-
-        this.setTutorialToForm = function (selector) {
-            try {
-                let div = document.createElement('div');
-                let inner = document.createElement('div');
-                let msg = document.createElement('div');
-                let noclick = document.createElement('div');
-                btns = this.floatController();
-                div.append(inner, msg, btns, noclick);
-                div.classList.add('tutorial');
-                msg.classList.add('msg');
-                noclick.classList.add('noclick');
-                tutoBox = div;
-                tutorialBundle = [];
-                orderCount = 0;
-                selector.forEach(sel => {
-                    let settingItem = this.setStyleToTutorialItem(sel);
-                    if (!settingItem) throw new Error('[NoTarget] 타겟이 존재하지 않습니다.');
-                    tutorialBundle.push(settingItem);
-                });
-
-                currentTutorial = tutorialBundle[0];
-                this.starterTutorial();
-            } catch (e) {
-                console.error(e.message);
+        this.nextBtnHandler = function(options){
+            let curIdx = tutorialList.indexOf(currentTutorial)+1;
+            while(tutorialList[curIdx] && getComputedStyle(tutorialList[curIdx].target)['display']=='none') {
+                curIdx++;
             }
+            if(curIdx>tutorialList.length-1) curIdx = tutorialList.length-1;
+            this.setCurrentTutorial(curIdx);
+            this.rederTutorial(options);
         }
 
-        this.setStyleToTutorialItem = function (selector) {
-            let name, target, rect;
-
-            function Tutorial(name, target, msg, order) {
-                this.name = name;
-                this.target = target;
-                this.msg = msg;
-                this.order = order;
-            }
-
-            name = selector.name;
-
-            target = document.getElementById(name) || document.querySelector(`.${name}`) || document.querySelector(name);
-            if (!target) return false;
-            rect = target.getBoundingClientRect();
-
-            orderCount += 1;
-
-            return new Tutorial(name, target, selector.msg, orderCount);
-        }
-
-        this.setStyle = function (div, target, visible = true) {
-            let style = moduleOptions.style;
-            let msgBox = moduleOptions.style.msgBox;
-            let y = target.offsetTop;
-            let x = target.offsetLeft;
-            let limitX = window.innerWidth - 17;
-            let limitY = window.innerHeight - 17;
-            let msg = document.querySelector('.msg');
-            let position = getComputedStyle(target)['position'];
-            let layer = style.layerLine ?
-                `box-shadow: .3rem .3rem 0 ${style.border.width} gray, -.3rem -.3rem 0 ${style.border.width} ${style.border.color}` :
-                `border: ${style.border.width} ${style.border.line} ${style.border.color}`;
-
-            if(msg) msg.innerHTML = `[${currentTutorial.order}] ${currentTutorial.msg.replace(/\n/gm, '<br>')}`;
-
-            div.style.cssText = `
-                ${position=='fixed'?'position:'+position:''};
-                top: calc(${y}px - ${style.padding});
-                left: calc(${x}px - ${style.padding});
-                width: calc(${target.offsetWidth}px + ${style.padding} * 2);
-                height: calc(${target.offsetHeight}px + ${style.padding} * 2);
-                border-radius: ${style.border.rounded};
-            `;
-
-            div.children[0].style.cssText = `
-                ${position=='fixed'?'position:'+position:''};
-                top: calc(${y}px - ${style.padding});
-                left: calc(${x}px - ${style.padding});
-                width: calc(${target.offsetWidth}px + ${style.padding} * 2);
-                height: calc(${target.offsetHeight}px + ${style.padding} * 2);
-                border-radius: ${style.border.rounded};
-                ${layer};
-            `;
-            if(msg)
-            msg.style.cssText = `
-                background-color: ${msgBox.bgColor};
-                color: ${msgBox.color};
-                padding: ${style.padding};
-                border-radius: ${style.border.rounded};
-                margin-top: 1rem;
-                width: ${target.offsetWidth>=limitX?limitX*0.8+'px':'fit-content'};
-                ${y+target.offsetHeight*1.3>limitY?'bottom':'top'}: 110%;
-                ${x+target.offsetWidth*1.3>limitX?'right':'left'}: 0;
-                margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: ${style.padding};
-            `;
-
-            let msgHeight = 0;
-            let animationHeight = requestAnimationFrame(getHeight);
-            function getHeight(){
-                if(document.querySelector('.msg'))
-                msgHeight = document.querySelector('.msg').getBoundingClientRect().height;
-                btns.style.cssText = `
-                    margin-top: 1rem;
-                    ${y+target.offsetHeight*1.3>limitY?'bottom: calc(120% + '+style.padding+' * 5)':'top: calc('+msgHeight+'px + '+target.offsetHeight+'px + '+style.padding+' * 1)'};
-                    transform: translateY(100%);
-                    ${x+target.offsetWidth*1.3>limitX?'right':'left'}: 5%;
-                    margin-${x+target.offsetWidth*1.3>limitX?'right':'left'}: calc(${style.padding} / 2);
-                    ${y+target.offsetHeight*1.3>limitY?'margin-bottom: 1rem':''};
-                `;
-                requestAnimationFrame(getHeight);
-            }
-        }
-
-        this.responsiveTutorial = function (ev) {
-            let visible = getComputedStyle(currentTutorial.target)['display'] != 'none' ? true : false;
-            this.setStyle(tutoBox, currentTutorial.target, visible);
-        }
-
-        this.starterTutorial = function () {
-            moduleView.starterTutorial(tutoBox);
-            this.setStyle(tutoBox, currentTutorial.target);
+        this.exitBtnHandler = function(options){
+            moduleView.clearTutorial(options);
         }
     }
 
     function View() {
         let uiElem = null;
+        let buildBox = null;
 
         this.init = function (ui) {
             uiElem = ui;
         }
 
-        this.createRestartBtn = function(){
-            document.body.append();
+        this.buildForm = function(options){
+            let dom = new DOMParser();
+            return dom.parseFromString(`<div class="tuto-wrap">
+            <div class="tuto-box">
+                <div class="tuto-border">
+                    <span class="tuto-shadow"></span>
+                    <span class="tuto-mark"></span>
+                </div>
+                <div class="tuto-view-wrap">
+                    <div class="tuto-view">
+                        <div class="tuto-msg">
+                            <span tuto-order></span>
+                            <span tuto-msg></span>
+                            <br>
+                            <span tuto-num></span>
+                        </div>
+                        <span class="tuto-btns">
+                            <button class="prev">${options.naming.prev}</button>
+                            <button class="next">${options.naming.next}</button>
+                            <button class="exit">${options.naming.exit}</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>`, 'text/html').body.querySelector('.tuto-wrap');
         }
 
-        this.starterTutorial = function (tutoBox) {
-            document.body.append(tutoBox);
+        this.rederTutorial = function(tutoBox, tutorialList, options){
+            if(!buildBox) buildBox = this.buildForm(options, tutorialList, tutoBox.order);
+            this.preSetStyle(buildBox, options);
+            this.focusViewport(tutoBox);
+            buildBox.querySelector('[tuto-order]').innerHTML = tutoBox.order+1;
+            buildBox.querySelector('[tuto-msg]').innerHTML = tutoBox.message;
+            buildBox.querySelector('[tuto-num]').innerHTML = `${tutoBox.order+1}/${tutorialList.length}`;
+            document.body.insertAdjacentElement('afterbegin', buildBox);
+            this.updateBox(tutoBox, options);
+        }
+
+        this.preSetStyle = function(box, options){
+            let border = options.style.border;
+            let msgBox = options.style.msgBox;
+            let btns = options.style.btns;
+            setTimeout(()=>{
+                box.querySelector('.tuto-box').style.transition = 'left .5s, right .5s, top .5s, bottom .5s';
+                box.querySelector('.tuto-border').style.borderRadius = border.rounded || '1rem';
+                box.querySelector('.tuto-msg').style.backgroundColor = msgBox.bgColor;
+                box.querySelector('.tuto-msg').style.color = msgBox.color;
+                box.querySelector('.tuto-mark').style.boxShadow = `0 0 0 ${border.width||'3px'} ${border.color}`;
+                if(options.effect !== 'none') box.querySelector('.tuto-mark').classList.add(`effect-${options.effect}`)
+                box.querySelector('.tuto-shadow').style.boxShadow = `0 0 0 9999px ${options.style.shadowColor}`;
+                box.querySelector('.tuto-btns').style.borderRadius = btns.rounded || '1rem';
+            });
+        }
+
+        this.updateBox = function(tutoBox, options){
+            let top, left, width, height;
+
+            let target = tutoBox.target;
+            let position = buildBox.querySelector('.tuto-box');
+            let border = buildBox.querySelector('.tuto-border');
+            let view = buildBox.querySelector('.tuto-view');
+            let viewRect = view.getBoundingClientRect();
+            let targetRect = target.getBoundingClientRect();
+            let padding = options.style.padding;
+            
+            top = target.offsetTop;
+            left = target.offsetLeft;
+            width = targetRect.width;
+            height = targetRect.height;
+
+            if(padding.match(/[^px]/gm)) padding = parseFloat(padding.replace(/[^0-9\.]/gm, ''))*16;
+            else if(padding.match(/px/gm)) padding = parseFloat(padding.replace(/[^0-9\.]/gm,''));
+            
+            if(window.innerWidth-17 > left + viewRect.width + padding || left - viewRect.width<0){
+                view.style['left'] = `${padding}px`;
+                view.style['right'] = '';
+                view.style['width'] = `${(window.innerWidth-17-left)*0.9}px`
+            } else {
+                view.style['left'] = '';
+                view.style['right'] = `${padding}px`;
+            }
+
+            if(window.innerHeight > top/3 + height + viewRect.height + padding || height - viewRect.height<0){
+                position.style.flexDirection = `column`;
+                view.style['top'] = 0;
+                view.style['bottom'] = '';
+            } else {
+                if(getComputedStyle(target)['position']=='fixed') position.style.position = 'fixed';
+                position.style.flexDirection = `column-reverse`;
+                view.style['bottom'] = 0;
+                view.style['top'] = '';
+                view.querySelector('.tuto-btns').style.marginBottom = '1rem';
+            }
+
+            buildBox.style.display = width == 0 && height == 0?'none':'block';
+
+            position.style.top = `calc(${top}px - ${padding}px / 2)`;
+            position.style.left = `calc(${left}px - ${padding}px / 2)`;
+                
+            border.style.cssText = `
+                width: calc(${width}px + ${padding}px);
+                height: calc(${height}px + ${padding}px);
+            `;
+        }
+
+        this.clearTutorial = function(options){
+            if(buildBox) buildBox.remove();
+            this.createRestartBtn(options);
+        }
+
+        this.createRestartBtn = function(options){
+            let restart = document.createElement('button');
+            restart.innerHTML = options.naming.restart;
+            restart.classList.add('restart');
+            restart.style.bottom = '3rem';
+            restart.style.right = 'calc(3rem - 17px)';
+            document.body.append(restart);
+        }
+
+        this.focusViewport = function(tutoBox){
+            tutoBox.target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest'
+            });
         }
     }
 
     return {
         init: function (options) {
+            try{
+                if(!options.tutorial || options.tutorial.length == 0) throw new Error('[NoTutorials]지정된 대상이 없습니다.\n실행을 중단합니다.');
+            } catch(e){
+                console.error(e.message);
+                return ;
+            }
             options = this.initOptions(options);
+
             const head = document.head;
             const body = document.body;
             const html = document.querySelector('html');
@@ -388,25 +297,17 @@ const Tutorial = (function () {
                 html
             };
 
-            if (options.selector) {
-                options.selector.forEach(sel => {
-                    ui[sel.name] = sel.selector;
-                });
-            }
-
             const view = new View();
             const model = new Model();
             const controller = new Controller();
 
             view.init(ui);
-            model.init(view, options.selector);
+            model.init(view);
             controller.init(model, ui, options);
         },
         initOptions: function (options) {
             let initOptions = {
                 style: {
-                    type: "rect",
-                    layerLine: true,
                     padding: "1rem",
                     bgColor: "rgba(0,0,0,0.2)",
                     border: {
@@ -418,23 +319,27 @@ const Tutorial = (function () {
                     msgBox: {
                         bgColor: "rgba(0,0,0,0.5)",
                         color: "white",
+                    },
+                    btns: {
+                        rounded: ".2rem",
                     }
                 },
-                tutorial: {
-                    restart: "base", // "lastest"
-                }
+                naming: {
+                    restart: 'restart',
+                },
+                autoPlay: true,
+                effect: 'ripple',
             }
 
-            function finding(init, obj){
+            function finding(init, obj) {
                 for (let op in obj) {
-                    if(obj[op] instanceof Object && !(obj[op] instanceof Array)) {
+                    if (obj[op] instanceof Object && !(obj[op] instanceof Array) && op !== 'style') {
                         finding(init[op], obj[op]);
                     } else {
                         init[op] = obj[op];
                     }
                 }
             }
-
             finding(initOptions, options);
             return initOptions;
         }
