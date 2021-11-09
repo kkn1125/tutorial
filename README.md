@@ -76,6 +76,9 @@ const tutorial = Tutorial.init({
 
 ```html
 <!-- v0.1.1 pre-release -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-6/tutorial.css" integrity="sha384-Bb8S6Fd5e6urkRo1rtI03o9A29z61MS6811ooqwa/QBTetuIdV6YeVdcY8NYDihs" crossorigin="anonymous">
+
+<script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-6/tutorial.js" integrity="sha384-ZZIlf6BS4hjOzzDC04Ps2ATa+VlwAwjTn5hKDc2Ijve76+z8sZKtcChKYX7PuVLY" crossorigin="anonymous"></script>
 
 <!-- v0.1.0 pre-release -->
 <script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@vv0.1.1/tutorial.js" integrity="sha384-sA5mI0st775JGtzxJUNd8aln7/fhc82dqZOXqntMWHCIJbHjb6pRsWZ7N8WpKLdP" crossorigin="anonymous"></script>
