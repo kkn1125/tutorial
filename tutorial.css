@@ -1,12 +1,8 @@
 /**!
- * tutorial v0.1.0 (https://github.com/kkn1125/tutorial)
- * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125, ohoraming
+ * tutorial v0.1.1 (https://github.com/kkn1125/tutorial)
+ * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125
  * Licensed under MIT (https://github.com/kkn1125/tutorial/blob/main/LICENSE)
  */
-
-:root{
-    --tt-border: 3px solid salmon;
-}
 
 body{
     overflow-x: hidden;
@@ -87,7 +83,6 @@ button{
 .tuto-wrap .tuto-box .tuto-view{
     position: absolute;
     max-width: 90vw;
-    width: max-content;
     min-width: 10vw;
 }
 
@@ -96,6 +91,7 @@ button{
     background-color: rgba(0, 0, 0, 0.5);
     margin: 1rem 0 .5rem;
     padding: 1em;
+    width: max-content;
     border-radius: 1rem;
     -webkit-border-radius: 1rem;
     -moz-border-radius: 1rem;
@@ -189,13 +185,23 @@ button{
         height: calc(100% + 10px);
         opacity: 1;
         border: 5px solid red;
-    }
+        border-radius: inherit;
+        -webkit-border-radius: inherit;
+        -moz-border-radius: inherit;
+        -ms-border-radius: inherit;
+        -o-border-radius: inherit;
+}
     100%{
-        width: calc(150% + 6px);
-        height: calc(150% + 6px);
+        width: calc(100% + 10px + 5em);
+        height: calc(100% + 10px + 5em);
         opacity: 0;
         border: 0px solid red;
-    }
+        border-radius: 3rem;
+        -webkit-border-radius: 3rem;
+        -moz-border-radius: 3rem;
+        -ms-border-radius: 3rem;
+        -o-border-radius: 3rem;
+}
 }
 
 .tuto-wrap .tuto-box .tuto-border .tuto-shadow{

@@ -1,6 +1,6 @@
 /**!
- * tutorial v0.1.0 (https://github.com/kkn1125/tutorial)
- * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125, ohoraming
+ * tutorial v0.1.1 (https://github.com/kkn1125/tutorial)
+ * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125
  * Licensed under MIT (https://github.com/kkn1125/tutorial/blob/main/LICENSE)
  */
 
@@ -18,6 +18,7 @@ const Tutorial = (function () {
             options.autoPlay ? this.startTutorial() : moduleModel.exitBtnHandler(moduleOptions);
             window.addEventListener('resize', this.responsiveTutorial);
             window.addEventListener('scroll', this.responsiveTutorial);
+            window.addEventListener('keydown', this.tutoBtnsKbdHandler);
             window.addEventListener('click', this.tutoBtnsHandler);
             window.addEventListener('click', this.restartTutorial);
         }
@@ -36,6 +37,18 @@ const Tutorial = (function () {
             if(target.classList.contains('prev')) moduleModel.prevBtnHandler(moduleOptions);
             else if(target.classList.contains('next')) moduleModel.nextBtnHandler(moduleOptions);
             else if(target.classList.contains('exit')) moduleModel.exitBtnHandler(moduleOptions);
+        }
+
+        this.tutoBtnsKbdHandler = function(ev){
+            let key = ev.key;
+            let restart = uiElem.body.querySelector('.restart');
+            if(!key.ctrlKey && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Escape' && key !== ' ') return;
+            ev.preventDefault();
+            
+            if(key == 'ArrowLeft') moduleModel.prevBtnHandler(moduleOptions);
+            else if(key == 'ArrowRight') moduleModel.nextBtnHandler(moduleOptions);
+            else if(!restart && key == 'Escape') moduleModel.exitBtnHandler(moduleOptions);
+            else if(restart && key == ' ') moduleModel.restartTutorial(restart, moduleOptions);
         }
 
         this.restartTutorial = function(ev){
@@ -113,7 +126,13 @@ const Tutorial = (function () {
         }
 
         this.responsiveTutorial = function(options){
-            moduleView.updateBox(currentTutorial, options);
+            moduleView.updateBox(currentTutorial, options, this.isNone.bind(this));
+        }
+
+        this.isNone = function(target, options){
+            if(currentTutorial === target){
+                this.nextBtnHandler(options);
+            }
         }
 
         this.prevBtnHandler = function(options){
@@ -178,14 +197,16 @@ const Tutorial = (function () {
         }
 
         this.rederTutorial = function(tutoBox, tutorialList, options){
-            if(!buildBox) buildBox = this.buildForm(options, tutorialList, tutoBox.order);
+            if(!buildBox) buildBox = this.buildForm(options);
             this.preSetStyle(buildBox, options);
             this.focusViewport(tutoBox);
             buildBox.querySelector('[tuto-order]').innerHTML = tutoBox.order+1;
             buildBox.querySelector('[tuto-msg]').innerHTML = tutoBox.message;
             buildBox.querySelector('[tuto-num]').innerHTML = `${tutoBox.order+1}/${tutorialList.length}`;
             document.body.insertAdjacentElement('afterbegin', buildBox);
-            this.updateBox(tutoBox, options);
+            setTimeout(()=>{
+                this.updateBox(tutoBox, options);
+            });
         }
 
         this.preSetStyle = function(box, options){
@@ -204,15 +225,17 @@ const Tutorial = (function () {
             });
         }
 
-        this.updateBox = function(tutoBox, options){
-            let top, left, width, height;
+        this.updateBox = function(tutoBox, options, callback){
+            let top, left, width, height, right;
 
             let target = tutoBox.target;
+            let targetRect = target.getBoundingClientRect();
             let position = buildBox.querySelector('.tuto-box');
             let border = buildBox.querySelector('.tuto-border');
             let view = buildBox.querySelector('.tuto-view');
             let viewRect = view.getBoundingClientRect();
-            let targetRect = target.getBoundingClientRect();
+            let msg = buildBox.querySelector('.tuto-msg');
+            let msgRect = msg.getBoundingClientRect();
             let padding = options.style.padding;
             
             top = target.offsetTop;
@@ -226,7 +249,7 @@ const Tutorial = (function () {
             if(window.innerWidth-17 > left + viewRect.width + padding || left - viewRect.width<0){
                 view.style['left'] = `${padding}px`;
                 view.style['right'] = '';
-                view.style['width'] = `${(window.innerWidth-17-left)*0.9}px`
+                // view.style['width'] = `${(window.innerWidth-17-left)*0.9}px`
             } else {
                 view.style['left'] = '';
                 view.style['right'] = `${padding}px`;
@@ -244,7 +267,15 @@ const Tutorial = (function () {
                 view.querySelector('.tuto-btns').style.marginBottom = '1rem';
             }
 
+            if(msgRect.left+msgRect.width>window.innerWidth-17){
+                right = window.innerWidth-17-left-width;
+            }
+
+            msg.style.maxWidth = `${(window.innerWidth-17)*0.9 - right??left}px`;
+
             buildBox.style.display = width == 0 && height == 0?'none':'block';
+
+            if(callback && getComputedStyle(target)['display']=='none') callback(tutoBox, options);
 
             position.style.top = `calc(${top}px - ${padding}px / 2)`;
             position.style.left = `calc(${left}px - ${padding}px / 2)`;
@@ -315,7 +346,6 @@ const Tutorial = (function () {
                         rounded: "1rem",
                         width: "3px",
                         color: "#eb47a8",
-                        line: "solid",
                     },
                     msgBox: {
                         bgColor: "rgba(0,0,0,0.5)",

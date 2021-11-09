@@ -65,5 +65,5 @@ const tutorial = Tutorial.init({
         exit: '종료',
     },
     autoPlay: true,
-    effect: 'none',
+    effect: 'ripple',
 });

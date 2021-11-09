@@ -2,6 +2,10 @@
 
 웹페이지 안내를 만들어 주는 애플리케이션
 
+## 버전
+
+v0.1.1
+
 ## 사용법
 
 tutorial.js와 index.js를 연결합니다.
@@ -71,6 +75,8 @@ const tutorial = Tutorial.init({
 ## cdn 사용
 
 ```html
+<!-- v0.1.1 pre-release -->
+
 <!-- v0.1.0 pre-release -->
 <script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@vv0.1.1/tutorial.js" integrity="sha384-sA5mI0st775JGtzxJUNd8aln7/fhc82dqZOXqntMWHCIJbHjb6pRsWZ7N8WpKLdP" crossorigin="anonymous"></script>
 
