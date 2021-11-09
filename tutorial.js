@@ -364,7 +364,7 @@ const Tutorial = (function () {
 
             function finding(init, obj) {
                 for (let op in obj) {
-                    if (obj[op] instanceof Object && !(obj[op] instanceof Array) && op !== 'style') {
+                    if (obj[op] instanceof Object && !(obj[op] instanceof Array)) {
                         finding(init[op], obj[op]);
                     } else {
                         init[op] = obj[op];
