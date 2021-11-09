@@ -1,0 +1,50 @@
+/**!
+ * tutorial v0.1.1 (https://github.com/kkn1125/tutorial)
+ * Copyright 2021 Authors (https://github.com/kkn1125/tutorial/graphs/contributors) kkn1125
+ * Licensed under MIT (https://github.com/kkn1125/tutorial/blob/main/LICENSE)
+ */
+
+@charset "utf-8";
+
+:root{
+    --tu-main: #F88638;
+    --tu-primary: #976547;
+    --tu-secondary: #FFE8D1;
+    --tu-point: #005246;
+}
+
+body{
+    height: 200vh;
+}
+
+a[href]{
+    color: var(--tu-primary);
+}
+
+/* .card{
+    background-color: var(--tu-secondary);
+} */
+
+.divider{
+    margin-top: 3rem;
+    height: 1em;
+}
+
+[class^="h"]{
+    font-weight: 700;
+    border-left: 5px solid var(--tu-point);
+    padding-left: 0.5em;
+    margin-top: 3rem;
+}
+
+footer a[href]{
+    color: inherit !important;
+}
+
+footer p{
+    color: inherit;
+}
+
+kbd{
+    background-color: var(--tu-point);
+}
