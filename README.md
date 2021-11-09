@@ -76,9 +76,9 @@ const tutorial = Tutorial.init({
 
 ```html
 <!-- v0.1.1 pre-release -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-7/tutorial.css" integrity="sha384-Bb8S6Fd5e6urkRo1rtI03o9A29z61MS6811ooqwa/QBTetuIdV6YeVdcY8NYDihs" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@aa9c2f79c486ea38be4e7d8fc19bac198624ccbe/tutorial.css" integrity="sha384-Bb8S6Fd5e6urkRo1rtI03o9A29z61MS6811ooqwa/QBTetuIdV6YeVdcY8NYDihs" crossorigin="anonymous">
 
-<script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@update-7/tutorial.js" integrity="sha384-AW6PHqyHTfXklAZxQV/3JKhLzP0VLj/p+u7fXXxUb7GNq119prXA6hLsbK63RgJ3" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@aa9c2f79c486ea38be4e7d8fc19bac198624ccbe/tutorial.js" integrity="sha384-lcfOabf2uCuRlytVoV8bPM3+vT5lKVTtTxbZt/g1vVKh6izGGnC3FLl2Kkl0VZZB" crossorigin="anonymous"></script>
 
 <!-- v0.1.0 pre-release -->
 <script src="https://cdn.jsdelivr.net/gh/kkn1125/tutorial@vv0.1.1/tutorial.js" integrity="sha384-sA5mI0st775JGtzxJUNd8aln7/fhc82dqZOXqntMWHCIJbHjb6pRsWZ7N8WpKLdP" crossorigin="anonymous"></script>
