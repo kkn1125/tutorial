@@ -336,6 +336,8 @@ const Tutorial = (function () {
             view.init(ui);
             model.init(view);
             controller.init(model, ui, options);
+
+            window.tutorialLoaded = true;
         },
         initOptions: function (options) {
             let initOptions = {
