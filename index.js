@@ -43,7 +43,7 @@ const tutorial = Tutorial.init({
     ],
     style: {
         padding: "1rem",
-        shadowColor: "rgba(0,0,0,0.7)",
+        shadowColor: "rgba(0,0,0,0.5)",
         border: {
             rounded: "1rem",
             width: "10px",
