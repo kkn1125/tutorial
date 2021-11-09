@@ -348,6 +348,7 @@ const Tutorial = (function () {
                         color: "#eb47a8",
                     },
                     msgBox: {
+                        rounded: ".5rem",
                         bgColor: "rgba(0,0,0,0.5)",
                         color: "white",
                     },
