@@ -357,7 +357,10 @@ const Tutorial = (function () {
                     }
                 },
                 naming: {
-                    restart: 'restart',
+                    restart: '튜토리얼',
+                    prev: '이전',
+                    next: '다음',
+                    exit: '종료',
                 },
                 autoPlay: true,
                 effect: 'ripple',
