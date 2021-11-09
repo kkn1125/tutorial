@@ -284,6 +284,8 @@ const Tutorial = (function () {
                 width: calc(${width}px + ${padding}px);
                 height: calc(${height}px + ${padding}px);
             `;
+
+            if(!tutorialLoaded) tutorialLoaded = true;
         }
 
         this.clearTutorial = function(options){
@@ -336,8 +338,6 @@ const Tutorial = (function () {
             view.init(ui);
             model.init(view);
             controller.init(model, ui, options);
-
-            window.tutorialLoaded = true;
         },
         initOptions: function (options) {
             let initOptions = {
@@ -382,3 +382,5 @@ const Tutorial = (function () {
         }
     }
 })();
+
+window.tutorialLoaded = false;
