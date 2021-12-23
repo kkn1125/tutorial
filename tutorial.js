@@ -69,7 +69,10 @@ const Tutorial = (function () {
 
         this.startTutorial = function (options) {
             try{
-                this.validTarget(options.tutorial);
+                for(let tuto of options['tutorial']){
+                    const item = this.validTarget(tuto);
+                    tutorialList = this.setTutorialList(item);
+                }
             } catch(e){
                 console.error(e.message);
             }
@@ -79,38 +82,53 @@ const Tutorial = (function () {
         }
 
         this.validTarget = function (tutoInfo) {
-            let validList = [].slice.call(tutoInfo);
-
-            validList.map(tutoBox=>{
-                let target = document.getElementById(tutoBox.name) || document.querySelector(`.${tutoBox.name}`) || document.querySelector(tutoBox.name);
-                if(!target){
-                    throw new Error('타겟이 존재하지 않습니다.');
-                }
-                tutoBox.target = target;
-                return tutoBox;
-            });
-
-            this.setTutorialList([].slice.call(validList));
+            tutoInfo['target'] = document.getElementById(tutoInfo.name) || document.querySelector(`.${tutoInfo.name}`);
+            return tutoInfo;
         }
 
-        this.setTutorialList = function(list){
-            function TutoBox({name, target, message}){
-                this.name = name;
-                this.target = target;
-                this.message = message;
-                this.order = 0;
-                this.created = new Date().toLocaleString();
-                this.autoIncrement = function(){
-                    this.order = tutorialList.indexOf(this);
-                };
-            }
+        // this.validTarget = function (tutoInfo) {
+        //     let validList = [].slice.call(tutoInfo);
+
+        //     validList.map(tutoBox=>{
+        //         let target = document.getElementById(tutoBox.name) || document.querySelector(`.${tutoBox.name}`) || document.querySelector(tutoBox.name);
+        //         if(!target){
+        //             throw new Error('타겟이 존재하지 않습니다.');
+        //         }
+        //         tutoBox.target = target;
+        //         return tutoBox;
+        //     });
+
+        //     this.setTutorialList([].slice.call(validList));
+        // }
+
+        this.setTutorialList = function(item){
+            return [...tutorialList, {
+                name: item['name'],
+                target: item['target'],
+                message: item['message'],
+                order: tutorialList.length,
+                created: new Date().toLocaleString(),
+            }];
+        }
+
+        // this.setTutorialList = function(list){
+        //     function TutoBox({name, target, message}){
+        //         this.name = name;
+        //         this.target = target;
+        //         this.message = message;
+        //         this.order = 0;
+        //         this.created = new Date().toLocaleString();
+        //         this.autoIncrement = function(){
+        //             this.order = tutorialList.indexOf(this);
+        //         };
+        //     }
             
-            list.forEach(item=>{
-                let box = new TutoBox(item);
-                tutorialList.push(box);
-                box.autoIncrement();
-            });
-        }
+        //     list.forEach(item=>{
+        //         let box = new TutoBox(item);
+        //         tutorialList.push(box);
+        //         box.autoIncrement();
+        //     });
+        // }
 
         this.restartTutorial = function(target, options){
             this.startTutorial(options);
@@ -212,21 +230,42 @@ const Tutorial = (function () {
         this.preSetStyle = function(box, options){
             let border = options.style.border;
             let msgBox = options.style.msgBox;
-            let btns = options.style.btns;
+            let btnsRounded = options.style.btns.rounded;
+            const tutoBox = box.querySelector('.tuto-box');
+            const tutoBorder = box.querySelector('.tuto-border');
+            const tutoMsg = box.querySelector('.tuto-msg');
+            const tutoMark = box.querySelector('.tuto-mark');
+            const tutoShadow = box.querySelector('.tuto-shadow');
+            const tutoBtns = box.querySelector('.tuto-btns');
+            const mapper = [
+                [tutoBox, `transition: left .5s, right .5s, top .5s, bottom .5s`],
+                [tutoBorder, `border-radius: ${border.rounded || '1rem'}`],
+                [tutoMsg, `background-color: ${msgBox.bgColor}; color: ${msgBox.color}`],
+                [tutoMark, `box-shadow: 0 0 0 ${border.width||'3px'} ${border.color}`],
+                [tutoShadow, `border-radius: ${btnsRounded || '1rem'}`],
+                [tutoBtns, `border-radius: ${btnsRounded || '1rem'}`],
+            ];
+
+            mapper.forEach(([target, value])=>{
+                this.setStyleAtItem(target, value);
+            });
+
+            options.effect !== 'none'
+            ?tutoMark.classList.add(`effect-${options.effect}`)
+            :null;
+        }
+
+        this.setStyleAtItem = function(target, value){
             setTimeout(()=>{
-                box.querySelector('.tuto-box').style.transition = 'left .5s, right .5s, top .5s, bottom .5s';
-                box.querySelector('.tuto-border').style.borderRadius = border.rounded || '1rem';
-                box.querySelector('.tuto-msg').style.backgroundColor = msgBox.bgColor;
-                box.querySelector('.tuto-msg').style.color = msgBox.color;
-                box.querySelector('.tuto-mark').style.boxShadow = `0 0 0 ${border.width||'3px'} ${border.color}`;
-                if(options.effect !== 'none') box.querySelector('.tuto-mark').classList.add(`effect-${options.effect}`)
-                box.querySelector('.tuto-shadow').style.boxShadow = `0 0 0 9999px ${options.style.shadowColor}`;
-                box.querySelector('.tuto-btns').style.borderRadius = btns.rounded || '1rem';
+                target.style.cssText = `
+                    ${value};
+                `;
             });
         }
 
         this.updateBox = function(tutoBox, options, callback){
             let top, left, width, height, right;
+            let msgTop, msgLeft, msgWidth, msgHeight, msgRight;
 
             let target = tutoBox.target;
             let targetRect = target.getBoundingClientRect();
@@ -245,11 +284,10 @@ const Tutorial = (function () {
 
             if(padding.match(/[^px]/gm)) padding = parseFloat(padding.replace(/[^0-9\.]/gm, ''))*16;
             else if(padding.match(/px/gm)) padding = parseFloat(padding.replace(/[^0-9\.]/gm,''));
-            
+
             if(window.innerWidth-17 > left + viewRect.width + padding || left - viewRect.width<0){
                 view.style['left'] = `${padding}px`;
                 view.style['right'] = '';
-                // view.style['width'] = `${(window.innerWidth-17-left)*0.9}px`
             } else {
                 view.style['left'] = '';
                 view.style['right'] = `${padding}px`;

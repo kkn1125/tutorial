@@ -1,0 +1,26 @@
+{
+  "name": "obj37-tutorialjs",
+  "version": "1.0.0",
+  "description": "웹페이지 안내를 만들어 주는 애플리케이션",
+  "main": "tutorial.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkn1125/tutorial.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkn1125/tutorial/issues"
+  },
+  "homepage": "https://github.com/kkn1125/tutorial#readme",
+  "devDependencies": {
+    "jest": "^27.4.5"
+  },
+  "dependencies": {
+    "@types/jest": "^27.0.3"
+  }
+}
